@@ -37,6 +37,7 @@ def list_dirs(relative_path):
 
         areas = []
         points = []
+        labels = []
         dirs = []
         images = {}
 
@@ -65,6 +66,11 @@ def list_dirs(relative_path):
                         })
 
                 points.append((relative_path + f.rsplit('_points.txt')[0], json.dumps(img_points)))
+            if f.endswith("_labels.txt"):
+                with open(join(path, f)) as f_label:
+                    img_label = f_label.read()
+                    img_label = img_label[:-1]
+                labels.append((relative_path + f.rsplit('_labels.txt')[0], json.dumps(img_label)))
             if f.endswith(".jpg") or f.endswith(".JPEG"):
                 url = relative_path + f
                 images[f] = {'url' : url, 'name': f, 'mark': False}
@@ -91,6 +97,7 @@ def list_dirs(relative_path):
 
         areas = dict(areas)
         points = dict(points)
+        labels = dict(labels)
     except Exception as e:
         logger.info("Exception occured {}", e.message)
         logger.exception(e)
@@ -100,6 +107,7 @@ def list_dirs(relative_path):
                            images=images,
                            areas=areas,
                            points=points,
+                           labels=labels,
                            total=len(images) + len(dirs))
 
 
@@ -244,6 +252,7 @@ def update_areas(relative_path):
 @app.route("/browse/points", defaults={'relative_path': ''}, methods=["PUT"])
 @app.route("/browse/<path:relative_path>/points", methods=["PUT"])
 def update_points(relative_path):
+    print 'update_points'
     json = request.json
 
     areas_filepath = static_dir + json['img'].rsplit('.')[0] + '_points.txt'
@@ -254,6 +263,24 @@ def update_points(relative_path):
         with open(areas_filepath, 'w+') as f:
             for area in json['points']:
                 f.write('{0} {1}\n'.format(area['x'], area['y']))
+
+    response = jsonify({})
+    return response
+
+
+@app.route("/browse/labels", defaults={'relative_path': ''}, methods=["PUT"])
+@app.route("/browse/<path:relative_path>/labels", methods=["PUT"])
+def update_labels(relative_path):
+    print 'update_labels'
+    json = request.json
+
+    areas_filepath = static_dir + json['img'].rsplit('.')[0] + '_labels.txt'
+
+    if len(json['labels']) == 0:
+        os.remove(areas_filepath)
+    else:
+        with open(areas_filepath, 'w+') as f:
+            f.write('{0}\n'.format(json['labels'] + '\n'))
 
     response = jsonify({})
     return response

@@ -59,24 +59,40 @@
 
 <div>
     <label>
-        <input type="radio" name="mode" value="moderation"/>
+        <input type="radio" name="mode" value="moderation"
+               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
         Moderation mode
     </label>
 
     <label>
-        <input type="radio" name="mode" value="marking" checked/>
+        <input type="radio" name="mode" value="marking" checked
+               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
         Marking mode
     </label>
 
 
     <label>
-        <input type="radio" name="mode" value="bounding"/>
+        <input type="radio" name="mode" value="bounding"
+               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
         Bounding mode
     </label>
     <label>
-        <input type="radio" name="mode" value="points"/>
+        <input type="radio" name="mode" value="points"
+               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
         Points mode
     </label>
+    <label>
+        <input type="radio" name="mode" value="labels"
+               onchange="document.getElementById('cls_combo').disabled = !this.checked;"/>
+        Label mode
+    </label>
+    <select disabled name="class_combobox" id="cls_combo">
+        <option value="background">Background</option>
+        <option value="point">Point</option>
+        <option value="fist">Fist</option>
+        <option value="flat_hand">Flat hand</option>
+        <option value="unknown_gesture">Unknown gesture</option>
+    </select>
 </div>
 
 <br/>
@@ -111,10 +127,13 @@
 
 {% for image in images %}
 <div class="imgWrapper {{image.mark_class}}">
-    <img src="{{ image.url }}" data-areas="{{ areas[ image.url.rsplit('.')[0] ] or [] }}" data-points="{{ points[ image.url.rsplit('.')[0] ] or [] }}" class="localImage imgContain"
+    <img src="{{ image.url }}" data-areas="{{ areas[ image.url.rsplit('.')[0] ] or [] }}" data-points="{{ points[ image.url.rsplit('.')[0] ] or [] }}"
+         data-labels="{{ labels[ image.url.rsplit('.')[0] ] or [] }}"
+         class="localImage imgContain"
          style="max-width: 256px"/>
     <span class="imgRemove" data-img="{{ image.url }}">X</span>
     <figcaption>{{image.name}}</figcaption>
+    <div id="img-label"></div>
 </div>
 {% endfor %}
 {% endblock %}
