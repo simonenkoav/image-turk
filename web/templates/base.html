@@ -58,18 +58,19 @@
           media="screen" rel="stylesheet" type="text/css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
     <script src="http://www.jqueryscript.net/demo/jQuery-Plugin-For-Selecting-Multiple-Areas-of-An-Image-Select-Areas/jquery.selectareas.js"></script>
+
     <script>
     $(document).ready(function () {
         var $content = $('#content');
         var marking = true
-        var labeling = true
+        var labeling = false
 
         $('input[name=mode]').on("change", function () {
 
             switch (this.value) {
                 case 'moderation':
-                    labeling=false;
                     disableSelect();
+                    labeling=false;
                     marking=false;
                     break;
                 case 'marking':
@@ -78,13 +79,16 @@
                     disableSelect();
                     break;
                 case 'bounding':
+                    labeling=false;
                     enableSelect('areas');
                     break;
                 case 'points':
+                    labeling=false;
                     enableSelect('points');
                     break;
                 case 'labels':
                     labeling=true;
+                    marking=false;
                     enableSelect('labels');
                     break;
             }
@@ -93,6 +97,7 @@
 
 
         $('.webImage').on("click", function (e) {
+            console.log('webImage on click');
             var $input = $(this);
             var src = $input.attr("src");
             body = {"url": src, "id": $input.attr("id")};
@@ -116,11 +121,11 @@
         });
 
         $('.imgRemove').on("click", function (e) {
+            console.log('imgRemove on click');
             var $input = $(this);
             var remoteDir = $('#remote_dir').val();
             var src = $input.data("img");
             $(this).parent().remove();
-            console.log('.imgRemove');
             removeImageRequest(src, remoteDir, false, $input);
 
         });
@@ -130,12 +135,8 @@
             var remoteDir = $('#remote_dir').val();
             if (!marking) {
                 $(this).parent().remove();
-            } else if (!labeling){
-            <!--else {-->
-                <!--label = $(this).next().next();-->
-                <!--name = label.text()-->
-                <!--label.text("test")-->
-            <!--}-->
+            }
+            if (!labeling){
                 var src = $input.attr('src');
                 var label = $(this).next().next()
                 removeImageRequest(src, remoteDir, marking, $input);
@@ -144,7 +145,6 @@
         });
 
         function removeImageRequest(src, remoteDir, markingMode, input) {
-            console.log('removeImageRequest');
             body = {"img": src, "remote_dir": remoteDir, 'mark': markingMode}
             $.ajax({
                 type: "DELETE",
@@ -272,15 +272,13 @@
 
             $('.localImage').each(function (i, img) {
                 var $img = $(img)
-                console.log('$img.data(mode)');
-                console.log($img.data(mode));
                 var initialAreas = $img.data(mode) ? $img.data(mode) : JSON.parse($img.attr('data-' + mode))
                 $img.data('disabling', false)
                 $img.data('mode', mode)
 
 
                 function onLoad() {
-                    $("#img-label").text("");
+                    $img.parent().children()[1].hidden = true;
 
                     var ratio = img.naturalWidth / $img.width();
 
@@ -343,16 +341,16 @@
                 }
 
                 function onLabel() {
-                    console.log(initialAreas);
-                    $("#img-label").text(initialAreas);
-                    $("#img-label").css({"color": "red"});
+                    $img.parent().children()[1].hidden = false;
+                    $img.parent().children()[1].innerText = initialAreas;
+
 
                     $img.on('click', function (e) {
+                        $img.parent().children()[1].innerText = $("#class_name").val();
                         var _mode = $img.data('mode');
-                        $("#img-label").text($("#cls_combo").val());
                         var body = {
                             img: $img.attr('src'),
-                            [_mode]: $("#cls_combo").val()
+                            [_mode]: $("#class_name").val()
                         };
                         $.ajax({
                             type: "PUT",

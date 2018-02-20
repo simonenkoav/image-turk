@@ -60,39 +60,36 @@
 <div>
     <label>
         <input type="radio" name="mode" value="moderation"
-               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
+               onchange="document.getElementById('class_name').disabled = this.checked;"/>
         Moderation mode
     </label>
 
     <label>
         <input type="radio" name="mode" value="marking" checked
-               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
+               onchange="document.getElementById('class_name').disabled = this.checked;"/>
         Marking mode
     </label>
 
 
     <label>
         <input type="radio" name="mode" value="bounding"
-               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
+               onchange="document.getElementById('class_name').disabled = this.checked;"/>
         Bounding mode
     </label>
     <label>
         <input type="radio" name="mode" value="points"
-               onchange="document.getElementById('cls_combo').disabled = this.checked;"/>
+               onchange="document.getElementById('class_name').disabled = this.checked;"/>
         Points mode
     </label>
     <label>
         <input type="radio" name="mode" value="labels"
-               onchange="document.getElementById('cls_combo').disabled = !this.checked;"/>
+               onchange="document.getElementById('class_name').disabled = !this.checked;"/>
         Label mode
     </label>
-    <select disabled name="class_combobox" id="cls_combo">
-        <option value="background">Background</option>
-        <option value="point">Point</option>
-        <option value="fist">Fist</option>
-        <option value="flat_hand">Flat hand</option>
-        <option value="unknown_gesture">Unknown gesture</option>
-    </select>
+    <div>
+        <label>Enter class name:</label>
+        <input type="text" name="class_name" id="class_name" disabled="true"/>
+    </div>
 </div>
 
 <br/>
@@ -126,14 +123,22 @@
 <br/>
 
 {% for image in images %}
-<div class="imgWrapper {{image.mark_class}}">
+<div class="imgWrapper {{image.mark_class}}" style="float:left; position:relative;">
     <img src="{{ image.url }}" data-areas="{{ areas[ image.url.rsplit('.')[0] ] or [] }}" data-points="{{ points[ image.url.rsplit('.')[0] ] or [] }}"
          data-labels="{{ labels[ image.url.rsplit('.')[0] ] or [] }}"
+         id="image_image"
          class="localImage imgContain"
          style="max-width: 256px"/>
+    <div class='description' id='label_description' style="position:absolute; top:0px; left:0px; width:100%;
+		background-color:black; color:red; opacity:0.8; filter:alpha(opacity=70)" hidden="true">
+		<!-- description content -->
+		<p class='description_content' style="padding:10px; margin:0px; font-size: 20px"></p>
+		<!-- end description content -->
+	</div>
     <span class="imgRemove" data-img="{{ image.url }}">X</span>
     <figcaption>{{image.name}}</figcaption>
-    <div id="img-label"></div>
+
 </div>
+
 {% endfor %}
 {% endblock %}
