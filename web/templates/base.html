@@ -133,7 +133,7 @@
         $('.localImage').on("click", function (e) {
             var $input = $(this);
             var remoteDir = $('#remote_dir').val();
-            if (!marking) {
+            if (!marking && !labeling) {
                 $(this).parent().remove();
             }
             if (!labeling){
