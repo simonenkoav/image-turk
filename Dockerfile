@@ -16,7 +16,7 @@ python-all-dev \
 libfreetype6-dev
 
 COPY . /opt/image-turk-nastya/
-ADD https://dl.dropboxusercontent.com/u/40391687/api_credentials.py /opt/image-turk-nastya/searchtools/engines/
+# ADD https://dl.dropboxusercontent.com/u/40391687/api_credentials.py /opt/image-turk-nastya/searchtools/engines/
 
 RUN mkdir -p /opt/image-turk-nastya/data
 
@@ -25,6 +25,6 @@ RUN pip install -r /opt/image-turk-nastya/requirements.txt
 
 WORKDIR /opt/image-turk-nastya/
 
-EXPOSE 5000
+EXPOSE 5001
 
 CMD ["python", "image_turk.py"]
